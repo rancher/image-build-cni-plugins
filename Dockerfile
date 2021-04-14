@@ -38,4 +38,4 @@ FROM ${UBI_IMAGE}
 COPY --from=cni_plugins /opt/cni/ /opt/cni/
 WORKDIR /
 COPY install-cnis.sh .
-ENTRYPOINT ["install-cnis.sh"]
+ENTRYPOINT ["./install-cnis.sh"]
