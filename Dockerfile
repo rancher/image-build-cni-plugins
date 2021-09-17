@@ -1,7 +1,7 @@
 ARG ARCH="amd64"
 ARG TAG="v0.9.1"
 ARG UBI_IMAGE=registry.access.redhat.com/ubi7/ubi-minimal:latest
-ARG GO_IMAGE=rancher/hardened-build-base:v1.15.8b5
+ARG GO_IMAGE=rancher/hardened-build-base:v1.16.7b7
 
 ### Build the cni-plugins ###
 FROM ${GO_IMAGE} as cni_plugins
