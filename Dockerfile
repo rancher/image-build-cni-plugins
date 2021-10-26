@@ -5,7 +5,7 @@ ARG GO_IMAGE=rancher/hardened-build-base:v1.16.9b7
 
 ### Build the cni-plugins ###
 FROM ${GO_IMAGE} as cni_plugins
-ARG ARCH="amd64"
+ARG ARCH
 ARG TAG
 RUN git clone --depth=1 https://github.com/containernetworking/plugins.git $GOPATH/src/github.com/containernetworking/plugins \
     && cd $GOPATH/src/github.com/containernetworking/plugins \
