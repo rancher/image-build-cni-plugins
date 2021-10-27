@@ -21,7 +21,7 @@ steps:
   image: rancher/hardened-build-base:v1.16.7b7
   commands:
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-  - make DRONE_TAG=${DRONE_TAG} image-push image-manifest
+  - make DRONE_TAG=${DRONE_TAG} image-push
   environment:
     DOCKER_PASSWORD:
       from_secret: docker_password
@@ -46,5 +46,72 @@ volumes:
 - name: docker
   host:
     path: /var/run/docker.sock
+---
+kind: pipeline
+type: docker
+name: linux-s390x
 
+platform:
+  os: linux
+  arch: amd64
+
+node:
+  arch: s390x
+
+steps:
+- name: build
+  pull: always
+  image: rancher/hardened-build-base:v1.16.9b7
+  failure: ignore
+  commands:
+  - make DRONE_TAG=${DRONE_TAG}
+  volumes:
+  - name: docker
+    path: /var/run/docker.sock
+
+- name: publish
+  image: rancher/hardened-build-base:v1.16.9b7
+  failure: ignore
+  commands:
+  - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+  - make DRONE_TAG=${DRONE_TAG} image-push
+  environment:
+    DOCKER_PASSWORD:
+      from_secret: docker_password
+    DOCKER_USERNAME:
+      from_secret: docker_username
+  volumes:
+  - name: docker
+    path: /var/run/docker.sock
+  when:
+    event:
+    - tag
+
+volumes:
+- name: docker
+  host:
+    path: /var/run/docker.sock
+---
+kind: pipeline
+type: docker
+name: manifest
+platform:
+  os: linux
+  arch: amd64
+steps:
+- name: push
+  image: plugins/manifest:1.2.3
+  settings:
+    password:
+      from_secret: docker_password
+    username:
+      from_secret: docker_username
+    spec: manifest.tmpl
+    ignore_missing: true
+  when:
+    event:
+    - tag
+depends_on:
+- linux-amd64
+- linux-s390x
 ...
