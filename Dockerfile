@@ -1,7 +1,7 @@
 ARG ARCH="amd64"
-ARG TAG="v0.9.1"
+ARG TAG="v1.0.1"
 ARG UBI_IMAGE=registry.access.redhat.com/ubi7/ubi-minimal:latest
-ARG GO_IMAGE=rancher/hardened-build-base:v1.16.10b7
+ARG GO_IMAGE=rancher/hardened-build-base:v1.16.12b7
 
 ### Build the cni-plugins ###
 FROM ${GO_IMAGE} as cni_plugins
@@ -17,6 +17,13 @@ RUN git clone --depth=1 https://github.com/containernetworking/plugins.git $GOPA
         -X github.com/containernetworking/plugins/pkg/utils/buildversion.BuildVersion=${TAG} \
         -linkmode=external -extldflags \"-static -Wl,--fatal-warnings\" \
     "
+RUN git clone --depth=1 https://github.com/flannel-io/cni-plugin $GOPATH/src/github.com/flannel-io/cni-plugin \
+    && cd $GOPATH/src/github.com/flannel-io/cni-plugin \
+    && git fetch --all --tags --prune \
+    && git checkout tags/${TAG} -b ${TAG} \
+    && make build_linux \
+    && mv $GOPATH/src/github.com/flannel-io/cni-plugin/dist/flannel-amd64 $GOPATH/src/github.com/containernetworking/plugins/bin/flannel
+
 WORKDIR $GOPATH/src/github.com/containernetworking/plugins
 RUN go-assert-static.sh bin/* \
     && if [ "${ARCH}" != "s390x" ]; then \
