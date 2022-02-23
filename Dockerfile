@@ -22,7 +22,7 @@ RUN git clone --depth=1 https://github.com/flannel-io/cni-plugin $GOPATH/src/git
     && git fetch --all --tags --prune \
     && git checkout tags/${TAG} -b ${TAG} \
     && make build_linux \
-    && mv $GOPATH/src/github.com/flannel-io/cni-plugin/dist/flannel-amd64 $GOPATH/src/github.com/containernetworking/plugins/bin/flannel
+    && mv $GOPATH/src/github.com/flannel-io/cni-plugin/dist/flannel-${ARCH} $GOPATH/src/github.com/containernetworking/plugins/bin/flannel
 
 WORKDIR $GOPATH/src/github.com/containernetworking/plugins
 RUN go-assert-static.sh bin/* \
