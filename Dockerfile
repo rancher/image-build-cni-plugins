@@ -11,9 +11,7 @@ RUN git clone --depth=1 https://github.com/containernetworking/plugins.git $GOPA
     cd $GOPATH/src/github.com/containernetworking/plugins && \
     git fetch --all --tags --prune && \
     git checkout tags/${TAG} -b ${TAG} && \
-    sh -ex ./build_linux.sh -v && \
-    -gcflags=-trimpath=/go/src \
-    -ldflags " \
+    sh -ex ./build_linux.sh -v -gcflags=-trimpath=/go/src -ldflags " \
     -X github.com/containernetworking/plugins/pkg/utils/buildversion.BuildVersion=${TAG} \
     -linkmode=external -extldflags \"-static -Wl,--fatal-warnings\" \
     "
