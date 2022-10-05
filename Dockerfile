@@ -1,7 +1,7 @@
 ARG ARCH="amd64"
 ARG TAG="v1.0.1"
 ARG BCI_IMAGE=registry.suse.com/bci/bci-base:15.3.17.20.12
-ARG GO_IMAGE=rancher/hardened-build-base:v1.16.12b7
+ARG GO_IMAGE=rancher/hardened-build-base:v1.18.6b7
 
 ### Build the cni-plugins ###
 FROM ${GO_IMAGE} as cni_plugins
