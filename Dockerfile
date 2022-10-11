@@ -1,7 +1,7 @@
 ARG ARCH="amd64"
 ARG TAG="v1.0.1"
-ARG UBI_IMAGE=registry.access.redhat.com/ubi7/ubi-minimal:latest
-ARG GO_IMAGE=rancher/hardened-build-base:v1.16.12b7
+ARG BCI_IMAGE=registry.suse.com/bci/bci-base:15.3.17.20.12
+ARG GO_IMAGE=rancher/hardened-build-base:v1.18.6b7
 
 ### Build the cni-plugins ###
 FROM ${GO_IMAGE} as cni_plugins
@@ -43,7 +43,7 @@ RUN go-assert-static.sh bin/* \
     && install -D -s bin/* /opt/cni/bin
 
 # Create image with the cni-plugins
-FROM ${UBI_IMAGE}
+FROM ${BCI_IMAGE}
 COPY --from=cni_plugins /opt/cni/ /opt/cni/
 WORKDIR /
 COPY install-cnis.sh .
