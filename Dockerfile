@@ -1,12 +1,16 @@
 ARG ARCH="amd64"
-ARG TAG="v1.0.1"
-ARG BCI_IMAGE=registry.suse.com/bci/bci-base:15.3.17.20.12
-ARG GO_IMAGE=rancher/hardened-build-base:v1.18.6b7
+ARG TAG="v1.2.0"
+ARG FLANNEL_TAG="v1.1.2"
+ARG BCI_IMAGE=registry.suse.com/bci/bci-base:15.4.27.14.55
+ARG GO_IMAGE=rancher/hardened-build-base:v1.20.4b8
+ARG GOEXPERIMENT=boringcrypto
 
 ### Build the cni-plugins ###
 FROM ${GO_IMAGE} as cni_plugins
 ARG ARCH
 ARG TAG
+ARG FLANNEL_TAG
+ARG GOEXPERIMENT
 RUN git clone --depth=1 https://github.com/containernetworking/plugins.git $GOPATH/src/github.com/containernetworking/plugins \
     && cd $GOPATH/src/github.com/containernetworking/plugins \
     && git fetch --all --tags --prune \
@@ -20,7 +24,7 @@ RUN git clone --depth=1 https://github.com/containernetworking/plugins.git $GOPA
 RUN git clone --depth=1 https://github.com/flannel-io/cni-plugin $GOPATH/src/github.com/flannel-io/cni-plugin \
     && cd $GOPATH/src/github.com/flannel-io/cni-plugin \
     && git fetch --all --tags --prune \
-    && git checkout tags/${TAG} -b ${TAG} \
+    && git checkout tags/${FLANNEL_TAG} -b ${FLANNEL_TAG} \
     && make build_linux \
     && mv $GOPATH/src/github.com/flannel-io/cni-plugin/dist/flannel-${ARCH} $GOPATH/src/github.com/containernetworking/plugins/bin/flannel
 
