@@ -1,8 +1,8 @@
 ARG ARCH="amd64"
 ARG TAG="v1.2.0"
 ARG FLANNEL_TAG="v1.1.2"
-ARG BCI_IMAGE=registry.suse.com/bci/bci-base:15.4.27.14.55
-ARG GO_IMAGE=rancher/hardened-build-base:v1.20.4b8
+ARG BCI_IMAGE=registry.suse.com/bci/bci-base
+ARG GO_IMAGE=rancher/hardened-build-base:v1.20.4b11
 ARG GOEXPERIMENT=boringcrypto
 
 ### Build the cni-plugins ###
@@ -28,7 +28,7 @@ RUN git clone --depth=1 https://github.com/flannel-io/cni-plugin $GOPATH/src/git
 
 WORKDIR $GOPATH/src/github.com/containernetworking/plugins
 RUN go-assert-static.sh bin/* && \
-    if [ "${ARCH}" != "s390x" ]; then \
+    if [ "${ARCH}" != "s390x" || "${ARCH}" != "arm64" ]; then \
         go-assert-boring.sh bin/bandwidth \
         bin/bridge \
         bin/dhcp \
