@@ -3,7 +3,6 @@ ARG TAG="v1.2.0"
 ARG FLANNEL_TAG="v1.1.2"
 ARG BCI_IMAGE=registry.suse.com/bci/bci-base
 ARG GO_IMAGE=rancher/hardened-build-base:v1.20.4b11
-ARG GOEXPERIMENT=boringcrypto
 
 ### Build the cni-plugins ###
 FROM ${GO_IMAGE} as cni_plugins
