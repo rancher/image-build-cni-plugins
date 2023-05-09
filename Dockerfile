@@ -9,42 +9,40 @@ ARG GOEXPERIMENT=boringcrypto
 FROM ${GO_IMAGE} as cni_plugins
 ARG ARCH
 ARG TAG
-ARG FLANNEL_TAG
-ARG GOEXPERIMENT
-RUN git clone --depth=1 https://github.com/containernetworking/plugins.git $GOPATH/src/github.com/containernetworking/plugins \
-    && cd $GOPATH/src/github.com/containernetworking/plugins \
-    && git fetch --all --tags --prune \
-    && git checkout tags/${TAG} -b ${TAG} \
-    && sh -ex ./build_linux.sh -v \
-    -gcflags=-trimpath=/go/src \
-    -ldflags " \
-        -X github.com/containernetworking/plugins/pkg/utils/buildversion.BuildVersion=${TAG} \
-        -linkmode=external -extldflags \"-static -Wl,--fatal-warnings\" \
-    "
-RUN git clone --depth=1 https://github.com/flannel-io/cni-plugin $GOPATH/src/github.com/flannel-io/cni-plugin \
-    && cd $GOPATH/src/github.com/flannel-io/cni-plugin \
-    && git fetch --all --tags --prune \
-    && git checkout tags/${FLANNEL_TAG} -b ${FLANNEL_TAG} \
-    && make build_linux \
-    && mv $GOPATH/src/github.com/flannel-io/cni-plugin/dist/flannel-${ARCH} $GOPATH/src/github.com/containernetworking/plugins/bin/flannel
+RUN git clone --depth=1 https://github.com/containernetworking/plugins.git $GOPATH/src/github.com/containernetworking/plugins && \
+    cd $GOPATH/src/github.com/containernetworking/plugins && \
+    git fetch --all --tags --prune && \
+    git checkout tags/${TAG} -b ${TAG} && \
+    sh -ex ./build_linux.sh -v \
+        -gcflags=-trimpath=/go/src \
+        -ldflags " \
+            -X github.com/containernetworking/plugins/pkg/utils/buildversion.BuildVersion=${TAG} \
+            -linkmode=external -extldflags \"-static -Wl,--fatal-warnings\" \
+        "
+RUN git clone --depth=1 https://github.com/flannel-io/cni-plugin $GOPATH/src/github.com/flannel-io/cni-plugin && \
+    cd $GOPATH/src/github.com/flannel-io/cni-plugin && \
+    git fetch --all --tags --prune && \
+    git checkout tags/${TAG} -b ${TAG} && \
+    make build_linux && \
+    mv $GOPATH/src/github.com/flannel-io/cni-plugin/dist/flannel-${ARCH} $GOPATH/src/github.com/containernetworking/plugins/bin/flannel
 
 WORKDIR $GOPATH/src/github.com/containernetworking/plugins
-RUN go-assert-static.sh bin/* \
-    && if [ "${ARCH}" != "s390x" ]; then \
-             go-assert-boring.sh bin/bandwidth \
-             bin/bridge \
-             bin/dhcp \
-             bin/firewall \
-             bin/host-device \
-             bin/host-local \
-             bin/ipvlan \
-             bin/macvlan \
-             bin/portmap \
-             bin/ptp \
-             bin/vlan ; \
-           fi \
-    && mkdir -vp /opt/cni/bin \
-    && install -D -s bin/* /opt/cni/bin
+RUN go-assert-static.sh bin/* && \
+    if [ "${ARCH}" != "s390x" ]; then \
+        go-assert-boring.sh bin/bandwidth \
+        bin/bridge \
+        bin/dhcp \
+        bin/firewall \
+        bin/host-device \
+        bin/host-local \
+        bin/ipvlan \
+        bin/macvlan \
+        bin/portmap \
+        bin/ptp \
+        bin/vlan ; \
+    fi && \
+    mkdir -vp /opt/cni/bin && \
+    install -D -s bin/* /opt/cni/bin
 
 # Create image with the cni-plugins
 FROM ${BCI_IMAGE}
