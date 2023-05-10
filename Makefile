@@ -1,7 +1,13 @@
 SEVERITIES = HIGH,CRITICAL
 
-ifeq ($(ARCH),)
-	ARCH=$(shell go env GOARCH)
+UNAME_M = $(shell uname -m)
+ARCH=
+ifeq ($(UNAME_M), x86_64)
+	ARCH=amd64
+else ifeq ($(UNAME_M), aarch64)
+	ARCH=arm64
+else 
+	ARCH=$(UNAME_M)
 endif
 
 BUILD_META=-build$(shell date +%Y%m%d)

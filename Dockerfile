@@ -8,6 +8,8 @@ ARG GO_IMAGE=rancher/hardened-build-base:v1.20.4b11
 FROM ${GO_IMAGE} as cni_plugins
 ARG ARCH
 ARG TAG
+ARG FLANNEL_TAG
+ARG GOEXPERIMENT
 RUN git clone --depth=1 https://github.com/containernetworking/plugins.git $GOPATH/src/github.com/containernetworking/plugins && \
     cd $GOPATH/src/github.com/containernetworking/plugins && \
     git fetch --all --tags --prune && \
@@ -21,13 +23,13 @@ RUN git clone --depth=1 https://github.com/containernetworking/plugins.git $GOPA
 RUN git clone --depth=1 https://github.com/flannel-io/cni-plugin $GOPATH/src/github.com/flannel-io/cni-plugin && \
     cd $GOPATH/src/github.com/flannel-io/cni-plugin && \
     git fetch --all --tags --prune && \
-    git checkout tags/${TAG} -b ${TAG} && \
+    git checkout tags/${FLANNEL_TAG} -b ${FLANNEL_TAG} && \
     make build_linux && \
     mv $GOPATH/src/github.com/flannel-io/cni-plugin/dist/flannel-${ARCH} $GOPATH/src/github.com/containernetworking/plugins/bin/flannel
 
 WORKDIR $GOPATH/src/github.com/containernetworking/plugins
 RUN go-assert-static.sh bin/* && \
-    if [ "${ARCH}" != "s390x" || "${ARCH}" != "arm64" ]; then \
+    if [ "${ARCH}" = "amd64" ]; then \
         go-assert-boring.sh bin/bandwidth \
         bin/bridge \
         bin/dhcp \
