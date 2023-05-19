@@ -16,6 +16,12 @@ steps:
   volumes:
   - name: docker
     path: /var/run/docker.sock
+  when:
+    ref:
+      include:
+      - refs/heads/main
+      - refs/pull/**
+      - refs/tags/*
 
 - name: publish
   image: rancher/hardened-build-base:v1.16.10b7
@@ -41,6 +47,12 @@ steps:
   volumes:
   - name: docker
     path: /var/run/docker.sock
+  when:
+    ref:
+      include:
+      - refs/heads/main
+      - refs/pull/**
+      - refs/tags/*
 
 volumes:
 - name: docker
@@ -67,6 +79,12 @@ steps:
   volumes:
   - name: docker
     path: /var/run/docker.sock
+  when:
+    ref:
+      include:
+      - refs/heads/main
+      - refs/pull/**
+      - refs/tags/*
 
 - name: publish
   image: rancher/hardened-build-base:v1.16.10b7
@@ -108,6 +126,7 @@ steps:
   when:
     event:
     - tag
+
 depends_on:
 - linux-amd64
 - linux-s390x
