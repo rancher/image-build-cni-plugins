@@ -31,18 +31,12 @@ RUN git clone --depth=1 https://github.com/flannel-io/cni-plugin $GOPATH/src/git
 WORKDIR $GOPATH/src/github.com/containernetworking/plugins
 RUN go-assert-static.sh bin/* && \
     if [ "${ARCH}" = "amd64" ]; then \
-        go-assert-boring.sh bin/bandwidth \
-        bin/bridge \
-        bin/dhcp \
-        bin/firewall \
-        bin/host-device \
-        bin/host-local \
-        bin/ipvlan \
-        bin/macvlan \
-        bin/portmap \
-        bin/ptp \
-        bin/vlan ; \
-    fi && \
+        for file in bin/*; do \
+          if [ $(go tool nm $file | grep crypto | wc -l) != 0 ]; then \
+            go-assert-boring.sh $file; \
+          fi; \
+        done; \
+    fi; \
     mkdir -vp /opt/cni/bin && \
     install -D -s bin/* /opt/cni/bin
 
