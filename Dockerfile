@@ -1,7 +1,7 @@
 ARG ARCH="amd64"
 ARG TAG="v1.2.0"
 ARG FLANNEL_TAG="v1.1.2"
-ARG BCI_IMAGE=registry.suse.com/bci/bci-micro
+#ARG BCI_IMAGE=registry.suse.com/bci/bci-micro
 ARG GO_IMAGE=rancher/hardened-build-base:v1.20.7b3
 ARG GOEXPERIMENT=boringcrypto
 
@@ -47,7 +47,7 @@ RUN go-assert-static.sh bin/* && \
     install -D -s bin/* /opt/cni/bin
 
 # Create image with the cni-plugins
-FROM ${BCI_IMAGE}
+FROM scratch
 COPY --from=cni_plugins /opt/cni/ /opt/cni/
 WORKDIR /
 COPY install-cnis.sh .
