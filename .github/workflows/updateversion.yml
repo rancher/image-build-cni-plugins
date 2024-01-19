@@ -1,0 +1,76 @@
+name: "Check version update"
+
+on:
+  schedule:
+    # Runs at 06 PM UTC
+    - cron: '0 18 * * *'
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  updateversioncontainernetworking:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Check latest version
+        run: |
+          NEW_VER_ID=$(curl -s -H "Accept: application/vnd.github+json" https://api.github.com/repos/containernetworking/plugins/releases/latest | python3 -c "import sys, json; print(json.load(sys.stdin)['id'])")
+          OLD_VER=$(grep "ARG TAG=" Dockerfile | awk -F'"' '{print $2}')
+          OLD_VER_ID=$(curl -s -H "Accept: application/vnd.github+json" https://api.github.com/repos/containernetworking/plugins/releases/tags/${OLD_VER} | python3 -c "import sys, json; print(json.load(sys.stdin)['id'])")
+          if [ "$OLD_VER_ID" != "$NEW_VER_ID" ]; then
+             NEW_VER=$(curl -s -H "Accept: application/vnd.github+json" https://api.github.com/repos/containernetworking/plugins/releases/latest | python3 -c "import sys, json; print(json.load(sys.stdin)['name'])")
+             PR_TITLE="Update to version ${NEW_VER}"
+             EXISTING_PR=$(gh pr list --limit 1500 --json title,url | jq --arg title "${PR_TITLE}" -r '.[] | select(.title==$title) | .url')
+             if [ -z "${EXISTING_PR}" ]; then
+               BRANCH="gha-update-version-${NEW_VER}"
+               git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+               git config --global user.name "github-actions[bot]"
+               git checkout -b "$BRANCH"
+               sed -i "s/^ARG TAG=.*/ARG TAG=\"${NEW_VER}\"/" Dockerfile
+               sed -i "s/^TAG ?= .*/TAG ?= ${NEW_VER}\$(BUILD_META)/" Makefile
+               git add Dockerfile Makefile
+               git commit -a -m "Update version to ${NEW_VER}"
+               git push origin "$BRANCH"
+               PR_BODY="$(echo -e Updated plugins to version ${NEW_VER}\\n)"
+               gh pr create --title "${PR_TITLE}" --body "${PR_BODY}" --label "status/auto-created" --base "${GITHUB_REF_NAME}"
+             fi
+          fi
+  updateversionflannel:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Check latest version
+        run: |
+          NEW_VER_ID=$(curl -s -H "Accept: application/vnd.github+json" https://api.github.com/repos/flannel-io/cni-plugin/releases/latest | python3 -c "import sys, json; print(json.load(sys.stdin)['id'])")
+          OLD_VER=$(grep "ARG FLANNEL_TAG=" Dockerfile | awk -F'"' '{print $2}')
+          OLD_VER_ID=$(curl -s -H "Accept: application/vnd.github+json" https://api.github.com/repos/flannel-io/cni-plugin/releases/tags/${OLD_VER} | python3 -c "import sys, json; print(json.load(sys.stdin)['id'])")
+          if [ "$OLD_VER_ID" != "$NEW_VER_ID" ]; then
+             NEW_VER=$(curl -s -H "Accept: application/vnd.github+json" https://api.github.com/repos/flannel-io/cni-plugin/releases/latest | python3 -c "import sys, json; print(json.load(sys.stdin)['name'])")
+             PR_TITLE="Update to version ${NEW_VER}"
+             EXISTING_PR=$(gh pr list --limit 1500 --json title,url | jq --arg title "${PR_TITLE}" -r '.[] | select(.title==$title) | .url')
+             if [ -z "${EXISTING_PR}" ]; then
+               BRANCH="gha-update-version-${NEW_VER}"
+               git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+               git config --global user.name "github-actions[bot]"
+               git checkout -b "$BRANCH"
+               sed -i "s/^ARG FLANNEL_TAG=.*/ARG FLANNEL_TAG=\"${NEW_VER}\"/" Dockerfile
+               git add Dockerfile
+               git commit -a -m "Update version to ${NEW_VER}"
+               git push origin "$BRANCH"
+               PR_BODY="$(echo -e Updated flannel to version ${NEW_VER}\\n)"
+               gh pr create --title "${PR_TITLE}" --body "${PR_BODY}" --label "status/auto-created" --base "${GITHUB_REF_NAME}"
+             fi
+          fi
