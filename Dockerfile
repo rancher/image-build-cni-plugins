@@ -1,6 +1,6 @@
 ARG ARCH="amd64"
-ARG TAG="v1.2.0"
-ARG FLANNEL_TAG="v1.2.0-flannel3"
+ARG TAG="v1.4.0"
+ARG FLANNEL_TAG="v1.4.0-flannel1"
 ARG BCI_IMAGE=registry.suse.com/bci/bci-base
 ARG GO_IMAGE=rancher/hardened-build-base:v1.20.7b3
 ARG GOEXPERIMENT=boringcrypto
