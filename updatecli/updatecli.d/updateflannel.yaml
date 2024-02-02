@@ -1,0 +1,53 @@
+---
+name: "Update flannel CNI binary version" 
+
+sources:
+ flannel:
+   name: Get flannel CNI version
+   kind: githubrelease
+   spec:
+     owner: flannel-io
+     repository: cni-plugin
+     token: '{{ requiredEnv .github.token }}'
+     typefilter:
+       release: true
+       draft: false
+       prerelease: false
+     versionfilter:
+       kind: latest
+
+targets:
+  dockerfile:
+    name: "Bump to latest flannel CNI version in Dockerfile"
+    kind: dockerfile
+    scmid: default
+    sourceid: flannel
+    spec:
+      file: "Dockerfile"
+      instruction:
+        keyword: "ARG"
+        matcher: "FLANNEL_TAG"
+
+scms:
+  default:
+    kind: github
+    spec:
+      token: '{{ requiredEnv .github.token }}'
+      username: '{{ requiredEnv .github.username }}'
+      user: '{{ .github.user }}'
+      email: '{{ .github.email }}'
+      owner: '{{ .github.owner }}'
+      repository: '{{ .github.repository }}'
+      branch: '{{ .github.branch }}'
+      
+actions:
+    default:
+        title: 'Bump flannel CNI version to {{ source "flannel" }}'
+        kind: github/pullrequest
+        spec:
+            automerge: false
+            labels:
+                - chore
+                - skip-changelog
+                - status/auto-created
+        scmid: default
