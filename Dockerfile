@@ -1,6 +1,6 @@
 ARG ARCH="amd64"
 ARG TAG="v1.4.0"
-ARG FLANNEL_TAG="v1.4.0-flannel1"
+ARG FLANNEL_TAG=v1.4.0-flannel1
 ARG BCI_IMAGE=registry.suse.com/bci/bci-busybox
 ARG GO_IMAGE=rancher/hardened-build-base:v1.20.7b3
 ARG GOEXPERIMENT=boringcrypto
@@ -9,7 +9,7 @@ ARG GOEXPERIMENT=boringcrypto
 FROM ${GO_IMAGE} as cni_plugins
 ARG ARCH
 ARG TAG
-ARG FLANNEL_TAG
+ARG FLANNEL_TAG=v1.4.0-flannel1
 ARG GOEXPERIMENT
 RUN git clone --depth=1 https://github.com/containernetworking/plugins.git $GOPATH/src/github.com/containernetworking/plugins && \
     cd $GOPATH/src/github.com/containernetworking/plugins && \
