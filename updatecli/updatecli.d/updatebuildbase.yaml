@@ -1,0 +1,78 @@
+---
+name: "Update build base version" 
+
+sources:
+  gomod:
+    name: Get latest Golang version based on go.mod
+    kind: file
+    spec:
+      file: https://raw.githubusercontent.com/containernetworking/plugins/main/go.mod
+      matchpattern: 'go ([0-9]+\.[0-9]+)'
+    transformers:
+      - trimprefix: "go "
+
+  buildbase:
+   name: Get build base version
+   kind: githubrelease
+   dependson:
+     - "gomod"
+   spec:
+     owner: rancher
+     repository: image-build-base
+     token: '{{ requiredEnv .github.token }}'
+     typefilter:
+       release: true
+       draft: false
+       prerelease: false
+     versionfilter:
+       kind: regex
+       pattern: '{{ source "gomod"}}\.\S+'
+
+targets:
+  dockerfile:
+    name: "Bump to latest build base version in Dockerfile"
+    kind: dockerfile
+    scmid: default
+    sourceid: buildbase
+    spec:
+      file: Dockerfile
+      instruction:
+        keyword: ARG
+        matcher: "GO_IMAGE"
+    transformers:
+      - addprefix: "rancher/hardened-build-base:"
+
+  drone:
+    name: "Bump to latest build base version in Dockerfile"
+    kind: file
+    scmid: default
+    disablesourceinput: true
+    spec:
+      file: .drone.yml
+      matchpattern: '(?m)^  image: rancher/hardened-build-base:(.*)'
+      replacepattern: '  image: rancher/hardened-build-base:{{ source "buildbase" }}'
+
+scms:
+  default:
+    kind: github
+    spec:
+      token: '{{ requiredEnv .github.token }}'
+      username: '{{ .github.username }}'
+      user: '{{ .github.user }}'
+      email: '{{ .github.email }}'
+      owner: '{{ .github.owner }}'
+      repository: '{{ .github.repository }}'
+      branch: '{{ .github.branch }}'
+      
+actions:
+    default:
+        title: 'Bump build base version to {{ source "buildbase" }}'
+        kind: github/pullrequest
+        spec:
+            automerge: false
+            labels:
+                - chore
+                - skip-changelog
+                - status/auto-created
+        scmid: default
+
