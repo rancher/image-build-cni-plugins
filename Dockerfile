@@ -5,7 +5,7 @@ ARG GOEXPERIMENT=boringcrypto
 ### Build the cni-plugins ###
 FROM ${GO_IMAGE} as cni_plugins
 ARG ARCH=amd64
-ARG TAG=v1.4.0
+ARG TAG=v1.4.1
 ARG FLANNEL_TAG=v1.4.0-flannel1
 ARG GOEXPERIMENT
 RUN git clone --depth=1 https://github.com/containernetworking/plugins.git $GOPATH/src/github.com/containernetworking/plugins && \
