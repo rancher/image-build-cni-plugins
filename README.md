@@ -25,4 +25,4 @@ Example how to use it:
     name: cni-path
 
 
-This image is being used by hardened-calico (to deploy all cni binaries) and cilium (to deploy portmap)
+This image is being used by hardened-calico (to deploy all cni binaries), cilium (to deploy portmap) and rke2-multus chart (to deploy all plugins)
