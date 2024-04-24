@@ -17,7 +17,7 @@ RUN set -x && \
     xx-apk --no-cache add musl-dev gcc lld 
 
 ARG TAG=v1.4.1
-ARG FLANNEL_TAG=v1.4.0-flannel1
+ARG FLANNEL_TAG=v1.4.1-flannel1
 ARG GOEXPERIMENT
 RUN git clone --depth=1 https://github.com/containernetworking/plugins.git $GOPATH/src/github.com/containernetworking/plugins && \
     cd $GOPATH/src/github.com/containernetworking/plugins && \
