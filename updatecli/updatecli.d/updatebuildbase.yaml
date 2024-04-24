@@ -42,16 +42,6 @@ targets:
     transformers:
       - addprefix: "rancher/hardened-build-base:"
 
-  drone:
-    name: "Bump to latest build base version in Dockerfile"
-    kind: file
-    scmid: default
-    disablesourceinput: true
-    spec:
-      file: .drone.yml
-      matchpattern: '(?m)^  image: rancher/hardened-build-base:(.*)'
-      replacepattern: '  image: rancher/hardened-build-base:{{ source "buildbase" }}'
-
 scms:
   default:
     kind: github
