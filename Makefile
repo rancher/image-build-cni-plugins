@@ -12,7 +12,7 @@ endif
 
 BUILD_META=-build$(shell date +%Y%m%d)
 ORG ?= rancher
-TAG ?= v1.4.1$(BUILD_META)
+TAG ?= v1.5.0$(BUILD_META)
 
 ifeq (,$(filter %$(BUILD_META),$(TAG)))
 (error TAG $(TAG) needs to end with build metadata: $(BUILD_META))
