@@ -35,8 +35,8 @@ targets:
     disablesourceinput: true
     spec:
       file: Makefile
-      matchpattern: '(?m)^TAG \?\= (.*)'
-      replacepattern: 'TAG ?= {{ source "plugins" }}$$(BUILD_META)'
+      matchpattern: '(?m)^TAG \:\= (.*)'
+      replacepattern: 'TAG := {{ source "plugins" }}$$(BUILD_META)'
 
 scms:
   default:
