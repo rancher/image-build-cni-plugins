@@ -4,10 +4,10 @@ ARG GOEXPERIMENT=boringcrypto
 ARG ARCH="amd64"
 
 # Image that provides cross compilation tooling.
-FROM --platform=$BUILDPLATFORM rancher/mirrored-tonistiigi-xx:1.3.0 as xx
+FROM --platform=$BUILDPLATFORM rancher/mirrored-tonistiigi-xx:1.3.0 AS xx
 
 ### Build the cni-plugins ###
-FROM --platform=$BUILDPLATFORM ${GO_IMAGE} as base_builder
+FROM --platform=$BUILDPLATFORM ${GO_IMAGE} AS base_builder
 # copy xx scripts to your build stage
 COPY --from=xx / /
 RUN apk add file make git clang lld
@@ -16,7 +16,7 @@ ARG TARGETPLATFORM
 RUN set -x && \
     xx-apk --no-cache add musl-dev gcc 
 
-FROM base_builder as cni_plugins_builder
+FROM base_builder AS cni_plugins_builder
 ARG TAG=v1.5.1
 ARG FLANNEL_TAG=v1.5.1-flannel3
 ARG GOEXPERIMENT
@@ -70,7 +70,7 @@ RUN go-assert-static.sh bin/* && \
     mkdir -vp /opt/cni/bin && \
     install -D bin/* /opt/cni/bin
 
-FROM ${GO_IMAGE} as strip_binary
+FROM ${GO_IMAGE} AS strip_binary
 #strip needs to run on TARGETPLATFORM, not BUILDPLATFORM
 COPY --from=cni_plugins_builder /opt/cni/ /opt/cni/
 RUN for plugin in $(ls /opt/cni/bin); do \
