@@ -1,5 +1,5 @@
 ARG BCI_IMAGE=registry.suse.com/bci/bci-busybox
-ARG GO_IMAGE=rancher/hardened-build-base:v1.21.11b3
+ARG GO_IMAGE=rancher/hardened-build-base:v1.23.1b1
 ARG GOEXPERIMENT=boringcrypto
 ARG ARCH="amd64"
 
