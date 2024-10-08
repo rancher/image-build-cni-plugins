@@ -1,7 +1,6 @@
 ARG BCI_IMAGE=registry.suse.com/bci/bci-busybox
 ARG GO_IMAGE=rancher/hardened-build-base:v1.23.2b1
 ARG GOEXPERIMENT=boringcrypto
-ARG ARCH="amd64"
 
 # Image that provides cross compilation tooling.
 FROM --platform=$BUILDPLATFORM rancher/mirrored-tonistiigi-xx:1.3.0 AS xx
@@ -54,6 +53,7 @@ RUN cd $GOPATH/src/github.com/flannel-io/cni-plugin && \
 WORKDIR $GOPATH/src/github.com/containernetworking/plugins
 RUN xx-verify --static bin/*
 RUN go-assert-static.sh bin/* && \
+    export ARCH=$(xx-info arch) && \
     if [ "${ARCH}" = "amd64" ]; then \
         go-assert-boring.sh bin/bandwidth \
         bin/bridge \
