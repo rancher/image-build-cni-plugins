@@ -16,7 +16,7 @@ RUN set -x && \
     xx-apk --no-cache add musl-dev gcc 
 
 FROM base_builder AS cni_plugins_builder
-ARG TAG=v1.5.1
+ARG TAG=v1.6.0
 ARG FLANNEL_TAG=v1.5.1-flannel3
 ARG GOEXPERIMENT
 #clone and get dependencies
