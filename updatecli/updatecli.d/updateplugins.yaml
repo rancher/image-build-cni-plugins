@@ -14,7 +14,7 @@ sources:
        draft: false
        prerelease: false
      versionfilter:
-       kind: latest
+       kind: semver
 
 targets:
   dockerfile:
