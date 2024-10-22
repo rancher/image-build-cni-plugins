@@ -17,7 +17,7 @@ RUN set -x && \
 
 FROM base_builder AS cni_plugins_builder
 ARG TAG=v1.6.0
-ARG FLANNEL_TAG=v1.5.1-flannel3
+ARG FLANNEL_TAG=v1.6.0-flannel1
 ARG GOEXPERIMENT
 #clone and get dependencies
 RUN git clone --depth=1 https://github.com/containernetworking/plugins.git $GOPATH/src/github.com/containernetworking/plugins && \
