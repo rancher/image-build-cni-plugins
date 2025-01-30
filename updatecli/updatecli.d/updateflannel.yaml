@@ -14,7 +14,8 @@ sources:
        draft: false
        prerelease: false
      versionfilter:
-       kind: latest
+       kind: regex
+       pattern: "v[0-9]+.[0-9]+.[0-9]+-flannel[0-9]+"
 
 targets:
   dockerfile:
