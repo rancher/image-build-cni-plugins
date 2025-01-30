@@ -16,17 +16,19 @@ RUN set -x && \
     xx-apk --no-cache add musl-dev gcc 
 
 FROM base_builder AS cni_plugins_builder
+ARG CNI_SRC=github.com/rancher/release-cni-plugin
+ARG CNP_SRC=github.com/rancher/release-container-networking-plugins
 ARG TAG=v1.6.2
 ARG FLANNEL_TAG=v1.6.0-flannel1
 ARG GOEXPERIMENT
 #clone and get dependencies
-RUN git clone --depth=1 https://github.com/rancher/release-container-networking-plugins.git $GOPATH/src/github.com/containernetworking/plugins && \
+RUN git clone --depth=1 https://${CNP_SRC}.git $GOPATH/src/github.com/containernetworking/plugins && \
     cd $GOPATH/src/github.com/containernetworking/plugins && \
     git fetch --all --tags --prune && \
     git checkout tags/${TAG} -b ${TAG} &&\
     go mod download
 
-RUN git clone --depth=1 https://github.com/rancher/release-cni-plugin $GOPATH/src/github.com/flannel-io/cni-plugin && \
+RUN git clone --depth=1 https://${CNI_SRC} $GOPATH/src/github.com/flannel-io/cni-plugin && \
     cd $GOPATH/src/github.com/flannel-io/cni-plugin && \
     git fetch --all --tags --prune && \
     git checkout tags/${FLANNEL_TAG} -b ${FLANNEL_TAG} && \
