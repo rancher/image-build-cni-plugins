@@ -28,7 +28,7 @@ RUN git clone --depth=1 https://${CNP_SRC}.git $GOPATH/src/github.com/containern
     git checkout tags/${TAG} -b ${TAG} &&\
     go mod download
 
-RUN git clone --depth=1 https://${CNI_SRC} $GOPATH/src/github.com/flannel-io/cni-plugin && \
+RUN git clone --depth=1 https://${CNI_SRC}.git $GOPATH/src/github.com/flannel-io/cni-plugin && \
     cd $GOPATH/src/github.com/flannel-io/cni-plugin && \
     git fetch --all --tags --prune && \
     git checkout tags/${FLANNEL_TAG} -b ${FLANNEL_TAG} && \
