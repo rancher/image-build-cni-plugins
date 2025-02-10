@@ -4,6 +4,7 @@ on:
 
 permissions:
   contents: read  
+  id-token: write
 
 env:
   GITHUB_ACTION_TAG: ${{ github.ref_name }}
