@@ -24,9 +24,13 @@ endif
 
 REPO ?= rancher
 IMAGE = $(REPO)/hardened-cni-plugins:$(TAG)
+CNI_SRC ?= github.com/rancher/release-cni-plugin
+CNP_SRC ?= github.com/rancher/release-container-networking-plugins
 BUILD_OPTS = \
 	--platform=$(TARGET_PLATFORMS) \
 	--build-arg TAG=$(TAG:$(BUILD_META)=) \
+	--build-arg CNI_SRC=$(CNI_SRC) \
+	--build-arg CNP_SRC=$(CNP_SRC) \
 	--tag "$(IMAGE)"
 
 .PHONY: image-build
