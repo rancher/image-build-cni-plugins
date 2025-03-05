@@ -18,6 +18,7 @@ RUN set -x && \
 FROM base_builder AS cni_plugins_builder
 ARG TAG=v1.6.2
 ARG FLANNEL_TAG=v1.6.2-flannel1
+ARG BOND_COMMIT=80bef2cd60be32bef9dc08b1a30aaea5282c0311
 ARG GOEXPERIMENT
 #clone and get dependencies
 RUN git clone --depth=1 https://github.com/containernetworking/plugins.git $GOPATH/src/github.com/containernetworking/plugins && \
@@ -25,6 +26,11 @@ RUN git clone --depth=1 https://github.com/containernetworking/plugins.git $GOPA
     git fetch --all --tags --prune && \
     git checkout tags/${TAG} -b ${TAG} &&\
     go mod download
+
+RUN git clone --depth=1 https://github.com/k8snetworkplumbingwg/bond-cni.git $GOPATH/src/github.com/k8snetworkplumbingwg/bond-cni && \
+    cd $GOPATH/src/github.com/k8snetworkplumbingwg/bond-cni && \
+    git fetch --all --tags --prune && \
+    git checkout ${BOND_COMMIT}
 
 RUN git clone --depth=1 https://github.com/flannel-io/cni-plugin $GOPATH/src/github.com/flannel-io/cni-plugin && \
     cd $GOPATH/src/github.com/flannel-io/cni-plugin && \
@@ -49,6 +55,14 @@ RUN cd $GOPATH/src/github.com/flannel-io/cni-plugin && \
     make build_linux && \
     mkdir -p $GOPATH/src/github.com/containernetworking/plugins/bin && \
     mv $GOPATH/src/github.com/flannel-io/cni-plugin/dist/flannel-${ARCH} $GOPATH/src/github.com/containernetworking/plugins/bin/flannel
+# cross-compile bond
+RUN cd $GOPATH/src/github.com/k8snetworkplumbingwg/bond-cni && \
+    export GOOS=$(xx-info os) &&\
+    export GOARCH=$(xx-info arch) &&\
+    export ARCH=$(xx-info arch) &&\
+    xx-go build -ldflags "-linkmode=external -extldflags \"-static -Wl,--fatal-warnings\"" -mod=vendor -o ./bin/bond ./bond/ && \
+    mkdir -p $GOPATH/src/github.com/containernetworking/plugins/bin && \
+    mv $GOPATH/src/github.com/k8snetworkplumbingwg/bond-cni/bin/bond $GOPATH/src/github.com/containernetworking/plugins/bin/bond
 
 WORKDIR $GOPATH/src/github.com/containernetworking/plugins
 RUN xx-verify --static bin/*
@@ -56,6 +70,7 @@ RUN go-assert-static.sh bin/* && \
     export ARCH=$(xx-info arch) && \
     if [ "${ARCH}" = "amd64" ]; then \
         go-assert-boring.sh bin/bandwidth \
+        bin/bond \
         bin/bridge \
         bin/dhcp \
         bin/firewall \
