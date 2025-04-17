@@ -29,7 +29,7 @@ RUN git clone --depth=1 https://github.com/containernetworking/plugins.git $GOPA
 
 RUN git clone --depth=1 https://github.com/k8snetworkplumbingwg/bond-cni.git $GOPATH/src/github.com/k8snetworkplumbingwg/bond-cni && \
     cd $GOPATH/src/github.com/k8snetworkplumbingwg/bond-cni && \
-    git fetch --all --tags --prune && \
+    git fetch --unshallow --all --tags --prune && \
     git checkout ${BOND_COMMIT}
 
 RUN git clone --depth=1 https://github.com/flannel-io/cni-plugin $GOPATH/src/github.com/flannel-io/cni-plugin && \
