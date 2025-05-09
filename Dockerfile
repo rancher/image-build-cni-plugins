@@ -16,7 +16,7 @@ RUN set -x && \
     xx-apk --no-cache add musl-dev gcc 
 
 FROM base_builder AS cni_plugins_builder
-ARG TAG=v1.6.2
+ARG TAG=v1.7.1
 ARG FLANNEL_TAG=v1.6.2-flannel1
 ARG BOND_COMMIT=80bef2cd60be32bef9dc08b1a30aaea5282c0311
 ARG GOEXPERIMENT
