@@ -3,7 +3,7 @@ ARG GO_IMAGE=rancher/hardened-build-base:v1.24.4b1
 ARG GOEXPERIMENT=boringcrypto
 
 # Image that provides cross compilation tooling.
-FROM --platform=$BUILDPLATFORM rancher/mirrored-tonistiigi-xx:1.5.0 AS xx
+FROM --platform=$BUILDPLATFORM rancher/mirrored-tonistiigi-xx:1.6.1 AS xx
 
 ### Build the cni-plugins ###
 FROM --platform=$BUILDPLATFORM ${GO_IMAGE} AS base_builder
