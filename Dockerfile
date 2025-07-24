@@ -17,7 +17,7 @@ RUN set -x && \
 
 FROM base_builder AS cni_plugins_builder
 ARG TAG=v1.7.1
-ARG FLANNEL_TAG=v1.7.1-flannel1
+ARG FLANNEL_TAG=v1.7.1-flannel2
 ARG BOND_COMMIT=80bef2cd60be32bef9dc08b1a30aaea5282c0311
 ARG GOEXPERIMENT
 #clone and get dependencies
