@@ -1,39 +1,55 @@
 ---
-name: "Update build base version" 
+name: "Update build base version"
 
 sources:
-  gomod:
-    name: Get latest Golang version based on go.mod
-    kind: file
+  # Read the current version from the Dockerfile
+  current_minor:
+    name: Get current build base minor version from Dockerfile
+    kind: dockerfile
     spec:
-      file: https://raw.githubusercontent.com/containernetworking/plugins/main/go.mod
-      matchpattern: 'go ([0-9]+\.[0-9]+)'
+      file: Dockerfile
+      instruction:
+        keyword: ARG
+        matcher: GO_IMAGE
     transformers:
-      - trimprefix: "go "
+      # Value is "rancher/hardened-build-base:v1.24.9b1"
+      # Trim prefix to get "v1.24.9b1"
+      - trimprefix: "rancher/hardened-build-base:"
+      # Trim 'v' prefix to get "1.24.9b1"
+      - trimprefix: "v"
+      # This regex captures the major.minor to get "1.24"
+      # but it will be a list that will be handled in the next step
+      - findsubmatch:
+          pattern: '^([0-9]+\.[0-9]+)'
+      # Select the last element from the list
+      - kind: lastelement
 
-  buildbase:
-   name: Get build base version
-   kind: githubrelease
-   dependson:
-     - "gomod"
-   spec:
-     owner: rancher
-     repository: image-build-base
-     token: '{{ requiredEnv .github.token }}'
-     typefilter:
-       release: true
-       draft: false
-       prerelease: false
-     versionfilter:
-       kind: regex
-       pattern: '{{ source "gomod"}}\.\S+'
+  # Find the latest release matching that minor version
+  latest_patch:
+    name: Get latest build base patch for that minor
+    kind: githubrelease
+    dependson:
+      - "current_minor"
+    spec:
+      owner: rancher
+      repository: image-build-base
+      token: '{{ requiredEnv .github.token }}'
+      typefilter:
+        release: true
+        draft: false
+        prerelease: false
+      versionfilter:
+        kind: regex
+        # This searches for tags "v1.24.*"
+        # using the "1.24" value from the 'current_minor' source
+        pattern: 'v{{ source "current_minor" }}\.\S+'
 
 targets:
   dockerfile:
     name: "Bump to latest build base version in Dockerfile"
     kind: dockerfile
     scmid: default
-    sourceid: buildbase
+    sourceid: latest_patch
     spec:
       file: Dockerfile
       instruction:
@@ -47,7 +63,7 @@ scms:
     kind: github
     spec:
       token: '{{ requiredEnv .github.token }}'
-      username: '{{ .github.username }}'
+      username: '{{ requiredEnv .github.username }}'
       user: '{{ .github.user }}'
       email: '{{ .github.email }}'
       owner: '{{ .github.owner }}'
@@ -56,7 +72,7 @@ scms:
       
 actions:
     default:
-        title: 'Bump build base version to {{ source "buildbase" }}'
+        title: 'Bump build base version to {{ source "latest_patch" }}'
         kind: github/pullrequest
         spec:
             automerge: false
