@@ -1,5 +1,5 @@
 ARG BCI_IMAGE=registry.suse.com/bci/bci-busybox
-ARG GO_IMAGE=rancher/hardened-build-base:v1.24.11b2
+ARG GO_IMAGE=rancher/hardened-build-base:v1.24.12b1
 ARG GOEXPERIMENT=boringcrypto
 
 # Image that provides cross compilation tooling.
