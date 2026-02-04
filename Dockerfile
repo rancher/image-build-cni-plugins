@@ -1,5 +1,5 @@
 ARG BCI_IMAGE=registry.suse.com/bci/bci-busybox
-ARG GO_IMAGE=rancher/hardened-build-base:v1.24.12b1
+ARG GO_IMAGE=rancher/hardened-build-base:v1.25.6b1
 ARG GOEXPERIMENT=boringcrypto
 
 # Image that provides cross compilation tooling.
@@ -18,7 +18,7 @@ RUN set -x && \
 FROM base_builder AS cni_plugins_builder
 ARG TAG=v1.9.0
 ARG FLANNEL_TAG=v1.9.0-flannel1
-ARG BOND_COMMIT=dac19eb61de885201cec210573d333cf236274b4
+ARG BOND_COMMIT=258926ad54a78e3dc070ab416cf79055e79c279a
 ARG GOEXPERIMENT
 #clone and get dependencies
 RUN git clone --depth=1 https://github.com/containernetworking/plugins.git $GOPATH/src/github.com/containernetworking/plugins && \
@@ -30,7 +30,8 @@ RUN git clone --depth=1 https://github.com/containernetworking/plugins.git $GOPA
 RUN git clone --depth=1 https://github.com/k8snetworkplumbingwg/bond-cni.git $GOPATH/src/github.com/k8snetworkplumbingwg/bond-cni && \
     cd $GOPATH/src/github.com/k8snetworkplumbingwg/bond-cni && \
     git fetch --unshallow --all --tags --prune && \
-    git checkout ${BOND_COMMIT}
+    git checkout ${BOND_COMMIT} && \
+    go mod vendor
 
 RUN git clone --depth=1 https://github.com/flannel-io/cni-plugin $GOPATH/src/github.com/flannel-io/cni-plugin && \
     cd $GOPATH/src/github.com/flannel-io/cni-plugin && \
