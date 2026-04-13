@@ -28,7 +28,7 @@ jobs:
           private-key: ${{ env.PRIVATE_KEY }}
 
       - name: Sync Upstream Releases
-        uses: rancher/ecm-distro-tools/actions/sync-upstream-release@dcb1a0f50ca91f9f9a1f34fa335a9182686234d5 # v0.66.3
+        uses: rancher/ecm-distro-tools/actions/sync-upstream-release@dcb7716af5a318567115a231643164e1d8446021 # v0.67.2
         with:
           upstream-owner: 'containernetworking'
           upstream-repo: 'plugins'
