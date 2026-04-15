@@ -30,7 +30,7 @@ jobs:
           private-key: ${{ env.PRIVATE_KEY }}
 
       - name: Republish Latest Release
-        uses: rancher/ecm-distro-tools/actions/republish-latest@dcb1a0f50ca91f9f9a1f34fa335a9182686234d5 # v0.66.3
+        uses: rancher/ecm-distro-tools/actions/republish-latest@dcb7716af5a318567115a231643164e1d8446021 # v0.67.2
         with:
           owner: ${{ github.repository_owner }}
           repo: ${{ github.event.repository.name }}
