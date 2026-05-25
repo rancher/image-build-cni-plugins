@@ -32,7 +32,7 @@ jobs:
           secret/data/github/repo/${{ github.repository }}/rancher-prime-stg-registry/credentials password | STAGING_REGISTRY_PASSWORD ;
 
     - name: Build and push image - Staging
-      uses: rancher/ecm-distro-tools/actions/publish-image@da9f5b6e258c327660eeab3db97952b612f1cf9f # v0.69.3
+      uses: rancher/ecm-distro-tools/actions/publish-image@3a1c5e3106195b82d8700f8f760107aa634fecdf # v0.70.0
       with:
         image: "hardened-cni-plugins"
         tag: ${{ github.event.release.tag_name }}
@@ -45,7 +45,7 @@ jobs:
         prime-password: ${{ env.STAGING_REGISTRY_PASSWORD }}
 
     - name: Build and push image
-      uses: rancher/ecm-distro-tools/actions/publish-image@da9f5b6e258c327660eeab3db97952b612f1cf9f # v0.69.3
+      uses: rancher/ecm-distro-tools/actions/publish-image@3a1c5e3106195b82d8700f8f760107aa634fecdf # v0.70.0
       with:
         image: "hardened-cni-plugins"
         tag: ${{ github.event.release.tag_name }}
