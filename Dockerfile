@@ -1,4 +1,4 @@
-ARG BCI_IMAGE=registry.suse.com/bci/bci-busybox
+ARG BCI_IMAGE=registry.suse.com/bci/bci-nano:16.0
 ARG GO_IMAGE=rancher/hardened-build-base:v1.25.11b1
 ARG GOEXPERIMENT=boringcrypto
 
@@ -94,8 +94,20 @@ RUN for plugin in $(ls /opt/cni/bin); do \
     done
 
 
+# Pull userspace (busybox shell + applets) from k3s-root since bci-nano omits them
+FROM ${GO_IMAGE} AS k3s-root
+ARG TARGETARCH
+ARG K3S_ROOT_VERSION=v0.15.2
+ADD https://github.com/k3s-io/k3s-root/releases/download/${K3S_ROOT_VERSION}/k3s-root-${TARGETARCH}.tar /opt/k3s-root/k3s-root.tar
+RUN tar xvf /opt/k3s-root/k3s-root.tar -C /opt/k3s-root \
+ && mkdir -p /opt/k3s-root/usr \
+ && mv /opt/k3s-root/bin/aux /opt/k3s-root/usr/sbin \
+ && ln -sf ../bin/busybox /opt/k3s-root/usr/sbin/modprobe \
+ && ln -sf ../bin/busybox /opt/k3s-root/usr/sbin/mount
+
 # Create image with the cni-plugins
 FROM ${BCI_IMAGE}
+COPY --from=k3s-root /opt/k3s-root/bin /bin/
 COPY --from=strip_binary /opt/cni/ /opt/cni/
 WORKDIR /
 COPY install-cnis.sh .
