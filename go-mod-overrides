@@ -1,0 +1,9 @@
+# golang.org/x/net: CVE-2026-25680/25681/27136/42502/42506 (x/net/html XSS & DoS),
+# CVE-2025-47911/58190 (x/net/html parsing), CVE-2026-33814 (net/http2 DoS),
+# CVE-2026-39821 (x/net/idna punycode), CVE-2026-46600 (x/net/dns/dnsmessage panic).
+# Drop once upstream requires golang.org/x/net >= v0.56.0.
+-replace golang.org/x/net=golang.org/x/net@v0.56.0
+
+# golang.org/x/sys: CVE-2026-39824 (integer overflow in NewNTUnicodeString in golang.org/x/sys/windows).
+# Drop once upstream requires golang.org/x/sys >= v0.44.0.
+-replace golang.org/x/sys=golang.org/x/sys@v0.44.0
