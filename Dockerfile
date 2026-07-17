@@ -20,18 +20,21 @@ ARG TAG=v1.9.1
 ARG FLANNEL_TAG=v1.9.1-flannel2
 ARG BOND_COMMIT=258926ad54a78e3dc070ab416cf79055e79c279a
 ARG GOEXPERIMENT
+COPY go-mod-overrides /go-mod-overrides
 #clone and get dependencies
 RUN git clone --depth=1 https://github.com/containernetworking/plugins.git $GOPATH/src/github.com/containernetworking/plugins && \
     cd $GOPATH/src/github.com/containernetworking/plugins && \
     git fetch --all --tags --prune && \
     git checkout tags/${TAG} -b ${TAG} &&\
-    go mod download
+    go mod download && \
+    go-mod-overrides.sh /go-mod-overrides
 
 RUN git clone --depth=1 https://github.com/k8snetworkplumbingwg/bond-cni.git $GOPATH/src/github.com/k8snetworkplumbingwg/bond-cni && \
     cd $GOPATH/src/github.com/k8snetworkplumbingwg/bond-cni && \
     git fetch --unshallow --all --tags --prune && \
     git checkout ${BOND_COMMIT} && \
-    go mod vendor
+    go mod vendor && \
+    go-mod-overrides.sh /go-mod-overrides
 
 RUN git clone --depth=1 https://github.com/flannel-io/cni-plugin $GOPATH/src/github.com/flannel-io/cni-plugin && \
     cd $GOPATH/src/github.com/flannel-io/cni-plugin && \
