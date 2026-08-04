@@ -1,19 +1,31 @@
 version: 2
 updates:
 
+  # Maintain dependencies for Docker Images
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "kind/dependabot"
+    reviewers:
+      - "rancher/k3s"
+
   # Maintain dependencies for GitHub Actions
+  # Grouped and ignores patch updates
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "monthly"
     labels:
       - "kind/dependabot"
-    reviewers:
-      - "rancher/k3s"
     groups:
       action-deps:
         patterns:
           - "*"
+    ignore:
+      - dependency-name: "*"
         update-types:
-          - "minor"
-          - "major"
+          - "version-update:semver-patch"
+    reviewers:
+      - "rancher/k3s"
