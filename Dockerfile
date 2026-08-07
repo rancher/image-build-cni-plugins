@@ -1,5 +1,5 @@
 ARG BCI_IMAGE=registry.suse.com/bci/bci-nano:16.0
-ARG GO_IMAGE=rancher/hardened-build-base:v1.25.12b1
+ARG GO_IMAGE=rancher/hardened-build-base:v1.26.5b2
 ARG GOEXPERIMENT=boringcrypto
 
 # Image that provides cross compilation tooling.
@@ -17,7 +17,7 @@ RUN set -x && \
 
 FROM base_builder AS cni_plugins_builder
 ARG TAG=v1.9.1
-ARG FLANNEL_TAG=v1.9.1-flannel2
+ARG FLANNEL_TAG=v1.9.1-flannel3
 ARG BOND_COMMIT=258926ad54a78e3dc070ab416cf79055e79c279a
 ARG GOEXPERIMENT
 COPY go-mod-overrides /go-mod-overrides
