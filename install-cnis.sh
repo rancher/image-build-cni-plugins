@@ -5,6 +5,11 @@ SKIP_CNI_BINARIES=${SKIP_CNI_BINARIES:-""}
 SKIP_CNI_BINARIES=",$SKIP_CNI_BINARIES,"
 UPDATE_CNI_BINARIES=${UPDATE_CNI_BINARIES:-"true"}
 
+exit_with_error() {
+  echo "$1" >&2
+  exit 1
+}
+
 # Place the new binaries if the directory is writeable.
 for dir in /host/opt/cni/bin
 do
