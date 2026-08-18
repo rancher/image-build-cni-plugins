@@ -6,7 +6,7 @@ SKIP_CNI_BINARIES=",$SKIP_CNI_BINARIES,"
 UPDATE_CNI_BINARIES=${UPDATE_CNI_BINARIES:-"true"}
 
 exit_with_error() {
-  echo "$1" >&2
+  printf '%s\n' "$*" >&2
   exit 1
 }
 
