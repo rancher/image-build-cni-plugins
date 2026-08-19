@@ -1,5 +1,5 @@
 ARG BCI_IMAGE=registry.suse.com/bci/bci-nano:16.0
-ARG GO_IMAGE=rancher/hardened-build-base:v1.26.6b1
+ARG GO_IMAGE=rancher/hardened-build-base:v1.26.7b2
 ARG GOEXPERIMENT=boringcrypto
 
 # Image that provides cross compilation tooling.
