@@ -32,6 +32,6 @@ do
       echo "$dir/$filename is already here and UPDATE_CNI_BINARIES isn't true, skipping"
       continue
     fi
-    cp "$path" $dir/ && echo "copied $path to $dir correctly" || exit_with_error "Failed to copy $path to $dir. This may be caused by selinux configuration on the host, or something else."
+    cp -v --remove-destination "${path}" "${dir}/${filename}.tmp" && mv -v "${dir}/${filename}.tmp" "${dir}/${filename}" || exit_with_error "Failed to copy $path into $dir. This may be caused by selinux configuration on the host, or something else."
   done
 done
