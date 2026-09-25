@@ -15,6 +15,31 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
+      - name: Check out code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Validate that only Dockerfile was changed
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          base_sha="${{ github.event.before }}"
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" || -z "$base_sha" || "$base_sha" == "0000000000000000000000000000000000000000" ]]; then
+            base_sha="$(git rev-parse HEAD^)"
+          fi
+
+          changed_files="$(git diff --name-only "$base_sha" "$GITHUB_SHA")"
+
+          if [[ "$changed_files" != "Dockerfile" ]]; then
+            echo "Expected only Dockerfile to change, found:"
+            echo "$changed_files"
+            exit 1
+          fi
+
+          echo "Validation passed: only Dockerfile changed."
+
       - name: "Read Secrets"
         uses: rancher-eio/read-vault-secrets@0da85151ad1f19ed7986c41587e45aac1ace74b6 # v3
         with:
