@@ -53,17 +53,12 @@ RUN cd $GOPATH/src/github.com/containernetworking/plugins && \
     "
 # cross-compile flannel
 RUN cd $GOPATH/src/github.com/flannel-io/cni-plugin && \
-    export GOOS=$(xx-info os) &&\
-    export GOARCH=$(xx-info arch) &&\
     export ARCH=$(xx-info arch) &&\
     make build_linux && \
     mkdir -p $GOPATH/src/github.com/containernetworking/plugins/bin && \
     mv $GOPATH/src/github.com/flannel-io/cni-plugin/dist/flannel-${ARCH} $GOPATH/src/github.com/containernetworking/plugins/bin/flannel
 # cross-compile bond
 RUN cd $GOPATH/src/github.com/k8snetworkplumbingwg/bond-cni && \
-    export GOOS=$(xx-info os) &&\
-    export GOARCH=$(xx-info arch) &&\
-    export ARCH=$(xx-info arch) &&\
     xx-go build -ldflags "-linkmode=external -extldflags \"-static -Wl,--fatal-warnings\"" -mod=vendor -o ./bin/bond ./bond/ && \
     mkdir -p $GOPATH/src/github.com/containernetworking/plugins/bin && \
     mv $GOPATH/src/github.com/k8snetworkplumbingwg/bond-cni/bin/bond $GOPATH/src/github.com/containernetworking/plugins/bin/bond
@@ -71,8 +66,7 @@ RUN cd $GOPATH/src/github.com/k8snetworkplumbingwg/bond-cni && \
 WORKDIR $GOPATH/src/github.com/containernetworking/plugins
 RUN xx-verify --static bin/*
 RUN go-assert-static.sh bin/* && \
-    export ARCH=$(xx-info arch) && \
-    if [ "${ARCH}" = "amd64" ]; then \
+    if [ "$(xx-info arch)" = "amd64" ]; then \
         go-assert-boring.sh bin/bandwidth \
         bin/bond \
         bin/bridge \
