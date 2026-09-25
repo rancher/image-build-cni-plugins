@@ -40,13 +40,12 @@ scms:
       branch: '{{ .github.branch }}'
       
 actions:
-    default:
-        title: 'Bump plugins version to {{ source "plugins" }}'
-        kind: github/pullrequest
-        spec:
-            automerge: false
-            labels:
-                - chore
-                - skip-changelog
-                - status/auto-created
-        scmid: default
+  default:
+    title: 'Bump plugins version to {{ source "plugins" }}'
+    kind: github/pullrequest
+    spec:
+      merge:
+        strategy: auto
+      labels:
+        - updatecli
+    scmid: default
