@@ -17,26 +17,15 @@ sources:
        kind: semver
 
 targets:
-  dockerfile:
-    name: "Bump to latest plugins version in Dockerfile"
-    kind: dockerfile
-    scmid: default
-    sourceid: plugins
-    spec:
-      file: "Dockerfile"
-      instruction:
-        keyword: "ARG"
-        matcher: "TAG"
-
-  makefile:
-    name: "Bump to latest plugins version in Makefile"
+  tagfile:
+    name: "Bump to latest plugins version in TAG"
     kind: file
     scmid: default
     disablesourceinput: true
     spec:
-      file: Makefile
-      matchpattern: '(?m)^TAG \:\= (.*)'
-      replacepattern: 'TAG := {{ source "plugins" }}$$(BUILD_META)'
+      file: TAG
+      matchpattern: '(?m)^(.+)$'
+      replacepattern: '{{ source "plugins" }}'
 
 scms:
   default:
