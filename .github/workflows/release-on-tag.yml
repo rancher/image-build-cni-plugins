@@ -1,0 +1,78 @@
+# This workflow automatically creates a GitHub release when the default TAG file is updated on main.
+# 99% of the time, from an UpdateCLI PR that bumps the TAG while tracking upstream.
+name: Release On Tag Update
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'TAG'
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Calculate release tag from TAG file default
+        run: |
+          TAG="$(make -s log | sed -n 's/^TAG=//p')"
+          BUILD_META="$(make -s log | sed -n 's/^BUILD_META=//p')"
+          echo "RELEASE_TAG=${TAG}${BUILD_META}" >> "$GITHUB_ENV"
+
+      - name: Validate TAG-only change and release uniqueness
+        id: validate
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SHOULD_RELEASE=true
+
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            if [[ "${{ github.event.before }}" == "0000000000000000000000000000000000000000" ]]; then
+              echo "Push has no previous commit; skipping release"
+              SHOULD_RELEASE=false
+            elif [[ "$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}")" != "TAG" ]]; then
+              echo "Push changed files other than TAG; skipping release"
+              SHOULD_RELEASE=false
+            fi
+          fi
+
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "Release $RELEASE_TAG already exists; skipping"
+            SHOULD_RELEASE=false
+          fi
+
+          echo "should_release=$SHOULD_RELEASE" >> "$GITHUB_OUTPUT"
+
+      - name: Read app secrets
+        if: steps.validate.outputs.should_release == 'true'
+        uses: rancher-eio/read-vault-secrets@0da85151ad1f19ed7986c41587e45aac1ace74b6 # v3
+        with:
+          secrets: |
+            secret/data/github/repo/${{ github.repository }}/github/rancher-release-team-auto-tagger/app-credentials appId | APP_ID ;
+            secret/data/github/repo/${{ github.repository }}/github/rancher-release-team-auto-tagger/app-credentials privateKey | PRIVATE_KEY
+
+      - name: Generate GitHub App token
+        if: steps.validate.outputs.should_release == 'true'
+        id: generate-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ env.APP_ID }}
+          private-key: ${{ env.PRIVATE_KEY }}
+
+      - name: Create GitHub release if missing
+        if: steps.validate.outputs.should_release == 'true'
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |
+          gh release create "$RELEASE_TAG" \
+            --target main \
+            --title "$RELEASE_TAG" \
+            --generate-notes
