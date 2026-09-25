@@ -2,6 +2,11 @@
 
 This image deploys the CNI plugin binaries. The binaries are: bandwidth,bridge,dhcp,firewall,flannel,host-device,host-local,ipvlan,loopback,macvlan,portmap,ptp,sbr,static,tuning,vlan,vrf
 
+These binaries are complied from three seperate sources:
+- Containernetworking plugins: https://github.com/containernetworking/plugins
+- Bond CNI: https://github.com/k8snetworkplumbingwg/bond-cni
+- Flannel CNI plugin: https://github.com/flannel-io/cni-plugin
+
 There are two important env variables:
 * `SKIP_CNI_BINARIES`: specifies what cni binaries not to deploy
 * `UPDATE_CNI_BINARIES`: true/false. In case the binary already exists, should it overwrite it?
