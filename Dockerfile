@@ -27,14 +27,14 @@ RUN git clone --depth=1 https://github.com/containernetworking/plugins.git $GOPA
     git fetch --all --tags --prune && \
     git checkout tags/${TAG} -b ${TAG} &&\
     go mod download && \
-    go-mod-overrides.sh /go-mod-overrides
+    go-mod-replacer -local /go-mod-overrides
 
 RUN git clone --depth=1 https://github.com/k8snetworkplumbingwg/bond-cni.git $GOPATH/src/github.com/k8snetworkplumbingwg/bond-cni && \
     cd $GOPATH/src/github.com/k8snetworkplumbingwg/bond-cni && \
     git fetch --unshallow --all --tags --prune && \
     git checkout ${BOND_COMMIT} && \
     go mod vendor && \
-    go-mod-overrides.sh /go-mod-overrides
+    go-mod-replacer -local /go-mod-overrides
 
 RUN git clone --depth=1 https://github.com/flannel-io/cni-plugin $GOPATH/src/github.com/flannel-io/cni-plugin && \
     cd $GOPATH/src/github.com/flannel-io/cni-plugin && \

@@ -1,7 +1,8 @@
-# golang.org/x/net: CVE-2026-97032, CVE-2026-78659, CVE-2026-78663, CVE-2026-78669.
-# Drop once upstream requires golang.org/x/net >= v0.60.0
-# Added by the central override in image-build-approver
--replace golang.org/x/net=golang.org/x/net@v0.60.0
+# Local go.mod overrides for this image, applied at build time by go-mod-replacer
+# (see Dockerfile). Example: -replace example.com/module=example.com/module@v1.2.3
+#
+# Prefer the global policy: add broadly-applicable CVE bumps to global_overrides.json
+# in rancher/image-build-base. Keep an entry here only if it's specific to this repo.
 
 # golang.org/x/sys: CVE-2026-39824 (integer overflow in NewNTUnicodeString in golang.org/x/sys/windows).
 # Drop once upstream requires golang.org/x/sys >= v0.44.0.
