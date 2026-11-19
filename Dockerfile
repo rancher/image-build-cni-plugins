@@ -17,7 +17,7 @@ RUN set -x && \
 
 FROM base_builder AS cni_plugins_builder
 ARG TAG
-ARG FLANNEL_TAG=v1.9.1-flannel3
+ARG FLANNEL_TAG=v1.10.0-flannel1
 ARG BOND_COMMIT=acd2442a8e571da4b012b645c752e2dc399a4a4e
 ARG GOEXPERIMENT
 COPY go-mod-overrides /go-mod-overrides
