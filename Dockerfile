@@ -1,5 +1,5 @@
 ARG BCI_IMAGE=registry.suse.com/bci/bci-nano:16.0
-ARG GO_IMAGE=rancher/hardened-build-base:v1.26.11b1
+ARG GO_IMAGE=rancher/hardened-build-base:v1.27.4b1
 ARG GOEXPERIMENT=boringcrypto
 
 # Image that provides cross compilation tooling.
@@ -17,7 +17,7 @@ RUN set -x && \
 
 FROM base_builder AS cni_plugins_builder
 ARG TAG
-ARG FLANNEL_TAG=v1.9.1-flannel3
+ARG FLANNEL_TAG=v1.10.0-flannel1
 ARG BOND_COMMIT=acd2442a8e571da4b012b645c752e2dc399a4a4e
 ARG GOEXPERIMENT
 COPY go-mod-overrides /go-mod-overrides
@@ -53,7 +53,8 @@ RUN cd $GOPATH/src/github.com/containernetworking/plugins && \
     "
 # cross-compile flannel
 RUN cd $GOPATH/src/github.com/flannel-io/cni-plugin && \
-    export ARCH=$(xx-info arch) &&\
+    export ARCH=$(xx-info arch) && \
+    if [ "${ARCH}" = "amd64" ]; then export EXTRA_LDFLAGS="-linkmode=external"; fi && \
     make build_linux && \
     mkdir -p $GOPATH/src/github.com/containernetworking/plugins/bin && \
     mv $GOPATH/src/github.com/flannel-io/cni-plugin/dist/flannel-${ARCH} $GOPATH/src/github.com/containernetworking/plugins/bin/flannel
