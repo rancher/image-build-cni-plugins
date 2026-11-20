@@ -1,5 +1,5 @@
 ARG BCI_IMAGE=registry.suse.com/bci/bci-nano:16.0
-ARG GO_IMAGE=rancher/hardened-build-base:v1.26.11b1
+ARG GO_IMAGE=rancher/hardened-build-base:v1.27.4b1
 ARG GOEXPERIMENT=boringcrypto
 
 # Image that provides cross compilation tooling.
@@ -54,7 +54,7 @@ RUN cd $GOPATH/src/github.com/containernetworking/plugins && \
 # cross-compile flannel
 RUN cd $GOPATH/src/github.com/flannel-io/cni-plugin && \
     export ARCH=$(xx-info arch) &&\
-    make build_linux && \
+    EXTRA_LDFLAGS="-linkmode=external" make build_linux && \
     mkdir -p $GOPATH/src/github.com/containernetworking/plugins/bin && \
     mv $GOPATH/src/github.com/flannel-io/cni-plugin/dist/flannel-${ARCH} $GOPATH/src/github.com/containernetworking/plugins/bin/flannel
 # cross-compile bond
