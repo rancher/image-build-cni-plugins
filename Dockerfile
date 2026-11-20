@@ -73,6 +73,7 @@ RUN go-assert-static.sh bin/* && \
         bin/bridge \
         bin/dhcp \
         bin/firewall \
+        bin/flannel \
         bin/host-device \
         bin/host-local \
         bin/ipvlan \
