@@ -53,8 +53,9 @@ RUN cd $GOPATH/src/github.com/containernetworking/plugins && \
     "
 # cross-compile flannel
 RUN cd $GOPATH/src/github.com/flannel-io/cni-plugin && \
-    export ARCH=$(xx-info arch) &&\
-    EXTRA_LDFLAGS="-linkmode=external" make build_linux && \
+    export ARCH=$(xx-info arch) && \
+    if [ "${ARCH}" = "amd64" ]; then export EXTRA_LDFLAGS="-linkmode=external"; fi && \
+    make build_linux && \
     mkdir -p $GOPATH/src/github.com/containernetworking/plugins/bin && \
     mv $GOPATH/src/github.com/flannel-io/cni-plugin/dist/flannel-${ARCH} $GOPATH/src/github.com/containernetworking/plugins/bin/flannel
 # cross-compile bond
